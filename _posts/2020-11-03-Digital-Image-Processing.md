@@ -2,6 +2,8 @@
 layout: article
 title: Digital Image Processing
 mathjax: true
+tags:['图形处理']
+show_tags:true
 ---
 
 ## Overview
