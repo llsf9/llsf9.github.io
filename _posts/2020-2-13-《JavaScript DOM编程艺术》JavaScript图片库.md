@@ -7,7 +7,6 @@ tag: Js
 
 ## 《JavaScript DOM编程艺术》--JavaScript图片库
 
-[TOC]
 
 ## 第四章 案例研究：JavaScript图片库
 
