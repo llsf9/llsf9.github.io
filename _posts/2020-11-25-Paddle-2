@@ -1,0 +1,114 @@
+---
+layout: article
+title: Paddle七天学习（2）
+mathjax: true
+tag: Paddle
+---
+
+### 3. 图游走类算法
+
+#### 3.1 目标
+
+- Node embedding（词嵌入）
+  - 高维->低维 
+  - 进行下游任务（分类等）
+
+#### 3.2 Word2vec模型
+
+- skip-gram
+
+  根据中心词预测上下文:计算在给定单词的条件下，其他单词出现的概率
+
+- negative sampling(负采样)
+
+#### 3.3 图游走类模型 DeepWalk
+
+> 基于Word2vec的图模型
+>
+> - 单词=节点 句子=节点序列
+
+- **游走方式**：random walk
+
+  ![](https://tva1.sinaimg.cn/large/0081Kckwly1gl18qopae7j30ay05j752.jpg)
+
+- **构造**：Random Walk+skip Gram+Negative Sampling
+
+#### 3.4 Node2vec
+
+>  对Word2vec模型的改善
+
+- bias random walk
+
+  ![](https://tva1.sinaimg.cn/large/0081Kckwly1gl193g9wgwj306u05fwf8.jpg)
+
+  ![](https://tva1.sinaimg.cn/large/0081Kckwly1gl194a9f0ij30bz02k74v.jpg)
+
+  - $\pi_{vx}=\alpha_{pq}(t,x)w_{vx}$
+
+  - $$ \alpha_{pq}(t,x)=\left\{
+    \begin{aligned}
+    \frac{1}{p}　if　d_{tx}=0 \\
+    1　if　d_{tx}=1 \\
+    \frac{1}{q}　if　d_{tx}=2
+    \end{aligned}
+    \right.$$
+
+  - 说明：
+
+    - p决定游走go back的概率；q控制游走是广度优先还是深度优先（q<1 深度优先；q>1广度优先）
+
+    - p=q=1时，概率由权重$w_{vx}$决定
+
+#### 3.5 异构图随机游走metapath2vec
+
+- meta path
+
+  <u>有意义性</u>：在图中选取的由节点类型构成的组合路径
+
+  > e.g. 学术会议图
+  >
+  > ![](https://tva1.sinaimg.cn/large/0081Kckwly1gl19t4a7lyj309v09p763.jpg)
+  >
+  > meta path：a-p-a
+  >
+  > 意义：由两个作者a完成的论文p
+  >
+  > 基于meta path的随机游走:
+  >
+  > - a1-p4-a2
+  >
+  > - a2-p3-a1
+  >
+  >   ......
+  >
+  > (对称的meta path还可以进行a-p-a-p-a-p-a...扩展)
+
+- metapath2vec模型
+
+  - 单条meta path
+
+  - Meta Path based Random Walk + Skip Gram+Negative Sampling
+
+  - 负采样不考虑节点类型
+
+- metapath2vec++模型
+
+  - 单条meta path
+
+  - Meta Path based Random Walk + Skip Gram+Negative Sampling
+
+  - 负采样考虑节点类型
+
+- multi-metapath2vec++模型
+
+  - 多条meta path
+
+- side info+multi-metapath2vec++模型
+
+  - 多条meta path
+  - 融入属性特征
+
+#### 3.6 总结
+
+![](https://tva1.sinaimg.cn/large/0081Kckwly1gl1a578915j30jk0av76b.jpg)
+
