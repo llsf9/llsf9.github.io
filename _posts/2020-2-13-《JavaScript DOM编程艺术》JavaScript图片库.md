@@ -1,3 +1,10 @@
+---
+layout: article
+title: 《JavaScript DOM编程艺术》--JavaScript图片库
+mathjax: true
+tag: Js
+---
+
 ## 《JavaScript DOM编程艺术》--JavaScript图片库
 
 [TOC]
