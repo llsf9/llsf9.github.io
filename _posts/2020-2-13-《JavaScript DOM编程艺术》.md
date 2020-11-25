@@ -1,6 +1,12 @@
+---
+layout: article
+title: 《JavaScript DOM编程艺术》
+mathjax: true
+tag: Js
+---
+
 ## 《JavaScript DOM编程艺术》
 
-[TOC]
 
 ## 第二章 准备
 
