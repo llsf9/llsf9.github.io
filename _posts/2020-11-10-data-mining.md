@@ -1,9 +1,10 @@
 ---
 layout: article
-title: データマイニング: 概念と技術
+title: データマイニング
 mathjax: true
 tag: data mining
 ---
+
 
 ## データマイニング: 概念と技術
 
