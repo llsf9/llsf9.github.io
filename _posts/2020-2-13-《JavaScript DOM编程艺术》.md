@@ -1131,7 +1131,7 @@ function moveElement(elementID,final_x,final_y,interval){
 }
 ```
 
-### 10.2 实用的动画
+### 10.2 实用的动画  
 
 #### 10.2.1 提出问题
 
