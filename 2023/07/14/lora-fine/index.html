@@ -1,0 +1,354 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Lora学習による画風生成 | Su Aiwen 's Homepage</title><meta name="keywords" content="DL"><meta name="author" content="Su"><meta name="copyright" content="Su"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="https:&#x2F;&#x2F;github.com&#x2F;kohya-ss&#x2F;sd-scriptsを利用してLoraによる学習方法とhttps:&#x2F;&#x2F;github.com&#x2F;AUTOMATIC1111&#x2F;stable-diffusion-webuiでLoraモデルによる色々試した結果 利用するソースコードの準備git clone https:&#x2F;&#x2F;github.com&#x2F;kohya-ss&#x2F;sd-scripts.git git c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lora学習による画風生成">
+<meta property="og:url" content="https://llsf9.github.io/2023/07/14/lora-fine/index.html">
+<meta property="og:site_name" content="Su Aiwen &#39;s Homepage">
+<meta property="og:description" content="https:&#x2F;&#x2F;github.com&#x2F;kohya-ss&#x2F;sd-scriptsを利用してLoraによる学習方法とhttps:&#x2F;&#x2F;github.com&#x2F;AUTOMATIC1111&#x2F;stable-diffusion-webuiでLoraモデルによる色々試した結果 利用するソースコードの準備git clone https:&#x2F;&#x2F;github.com&#x2F;kohya-ss&#x2F;sd-scripts.git git c">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://p.ipic.vip/jxryh5.png">
+<meta property="article:published_time" content="2023-07-14T09:47:28.000Z">
+<meta property="article:modified_time" content="2023-07-14T09:50:24.705Z">
+<meta property="article:author" content="Su">
+<meta property="article:tag" content="DL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p.ipic.vip/jxryh5.png"><link rel="shortcut icon" href="/butterfly/favicon.png"><link rel="canonical" href="https://llsf9.github.io/2023/07/14/lora-fine/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Lora学習による画風生成',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-07-14 18:50:24'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/butterfly/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><div class="data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a></div><div class="data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a></div><div class="data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/study"><i class="fa-fw fas fa-school"></i><span> 学习</span></a></div><div class="menus_item"><a class="site-page" href="/photo"><i class="fa-fw fas fa-camera-retro"></i><span> 摄影</span></a></div><div class="menus_item"><a class="site-page" href="/categories/blog"><i class="fa-fw fas fa-feather-alt"></i><span> 闲言</span></a></div><div class="menus_item"><a class="site-page" href="/artitalk"><i class="fa-fw far fa-comment-alt"></i><span> 碎语</span></a></div><div class="menus_item"><a class="site-page" href="/categories/project"><i class="fa-fw fas fa-school"></i><span> 项目</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://p.ipic.vip/jxryh5.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Su Aiwen 's Homepage</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/categories/study"><i class="fa-fw fas fa-school"></i><span> 学习</span></a></div><div class="menus_item"><a class="site-page" href="/photo"><i class="fa-fw fas fa-camera-retro"></i><span> 摄影</span></a></div><div class="menus_item"><a class="site-page" href="/categories/blog"><i class="fa-fw fas fa-feather-alt"></i><span> 闲言</span></a></div><div class="menus_item"><a class="site-page" href="/artitalk"><i class="fa-fw far fa-comment-alt"></i><span> 碎语</span></a></div><div class="menus_item"><a class="site-page" href="/categories/project"><i class="fa-fw fas fa-school"></i><span> 项目</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Lora学習による画風生成</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-07-14T09:47:28.000Z" title="发表于 2023-07-14 18:47:28">2023-07-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-07-14T09:50:24.705Z" title="更新于 2023-07-14 18:50:24">2023-07-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/study/">study</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">602</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Lora学習による画風生成"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><a target="_blank" rel="noopener" href="https://github.com/kohya-ss/sd-scripts">https://github.com/kohya-ss/sd-scripts</a><br>を利用して<strong>Loraによる学習方法</strong>と<br><a target="_blank" rel="noopener" href="https://github.com/AUTOMATIC1111/stable-diffusion-webui">https://github.com/AUTOMATIC1111/stable-diffusion-webui</a><br>でLoraモデルによる<strong>色々試した結果</strong></p>
+<h2 id="利用するソースコードの準備"><a href="#利用するソースコードの準備" class="headerlink" title="利用するソースコードの準備"></a>利用するソースコードの準備</h2><p><code>git clone https://github.com/kohya-ss/sd-scripts.git</code></p>
+<p><code>git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui</code></p>
+<h2 id="データ準備"><a href="#データ準備" class="headerlink" title="データ準備"></a>データ準備</h2><p>タグ学習方式を利用します。</p>
+<p>画像のタグを学習させることで特徴を生成できるようになる。</p>
+<ol>
+<li><p>何らかのツールでタグを自動で生成させる</p>
+<p> e.g. wd14taggerによるタグ付け</p>
+ <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">$ cd sd-scripts/finetune</span><br><span class="line">$ python tag_images_by_wd14_tagger.py --batch_size &lt;batchSize&gt; &lt;pathToDataDir&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>すべてのキャップションを一つのファイルにまとめる（メタデータファイル）</p>
+<p> <code>python merge_dd_tags_to_metadata.py --caption_extension .txt &lt;pathToDataDir&gt; meta_tag.json</code></p>
+</li>
+<li><p>画風を表示するタグを加える</p>
+<p> たとえばモネの画風を学習させようとしたら、“mone”というタグをプラス</p>
+ <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">## before</span></span><br><span class="line">&lt;caption&gt;: &#123;</span><br><span class="line">	<span class="string">&quot;tags&quot;</span> : <span class="string">&quot;1girl, long_hair, looking_at_viewer, blush, smile&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">## after</span></span><br><span class="line">&lt;caption&gt;: &#123;</span><br><span class="line">	<span class="string">&quot;tags&quot;</span> : <span class="string">&quot;mone, 1girl, long_hair, looking_at_viewer, blush, smile&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> これで自動でモデルはmonaをモネ画風と関連づける</p>
+</li>
+</ol>
+<h3 id="例外処理"><a href="#例外処理" class="headerlink" title="例外処理"></a>例外処理</h3><ol>
+<li><p>透明背景</p>
+<ul>
+<li>rgbaタイプ：shape = (w,h,c=4)</li>
+<li>a=0 ↔ 完全透明　a=255 ↔ 完全可視</li>
+<li><p>透明部分を白い背景で埋めしておく必要がある</p>
+<p>透明があるの画像をそのままモデルに学習させるとrgbとして処理され、黒いと認識される恐れ</p>
+<p><img src="https://p.ipic.vip/vkgm12.png" alt="失敗例"></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>失敗例</p>
+<h2 id="Lora学習"><a href="#Lora学習" class="headerlink" title="Lora学習"></a>Lora学習</h2><h3 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h3><p>論文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">LoRA: Low-Rank Adaptation of Large Language Models</a></p>
+<blockquote>
+<p>LoRA performs on-par or better than fine-tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite having fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency.</p>
+</blockquote>
+<p>LLMのFinetuning方式の一種</p>
+<ul>
+<li>軽量モデル</li>
+<li>計算早い</li>
+<li>low-specのパソコンでもOK</li>
+</ul>
+<h3 id="手順"><a href="#手順" class="headerlink" title="手順"></a>手順</h3><ol>
+<li><p>ベースモデルのダウンロード</p>
+<p> <a target="_blank" rel="noopener" href="https://huggingface.co/models?library=diffusers">huggingFace</a>では色々なdiffuserモデルが提供される</p>
+</li>
+<li><p>学習スクリプトをGPU環境で動かす</p>
+<p> <a target="_blank" rel="noopener" href="https://github.com/kohya-ss/sd-scripts/blob/main/docs/train_network_README-ja.md">https://github.com/kohya-ss/sd-scripts/blob/main/docs/train_network_README-ja.md</a></p>
+ <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">## 簡単実行例</span></span><br><span class="line">accelerate launch --num_cpu_threads_per_process <span class="number">1</span> train_network.py </span><br><span class="line">    --pretrained_model_name_or_path=&lt;.ckptまたは.safetensordまたはDiffusers版モデルのディレクトリ&gt; </span><br><span class="line">    --in_json=&lt;tag_path&gt;</span><br><span class="line">    --output_dir=&lt;学習したモデルの出力先フォルダ&gt;  </span><br><span class="line">    --output_name=&lt;学習したモデル出力時のファイル名&gt; </span><br><span class="line">    --save_model_as=safetensors </span><br><span class="line">    --max_train_steps=<span class="number">400</span> </span><br><span class="line">    --learning_rate=<span class="number">1e-4</span> </span><br><span class="line">    --xformers </span><br><span class="line">    --mixed_precision=<span class="string">&quot;fp16&quot;</span> </span><br><span class="line">    --network_module=networks.lora</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Lora学習率は一般1e-4~1e-3</li>
+<li>stepSize = 500*画像枚数は良さそう（個人的な経験）</li>
+<li><p>Hyper-parameterの設定についての参考：</p>
+<p>  <a target="_blank" rel="noopener" href="https://note.com/gcem156/n/n1eb78d02b3f0">Stable-Diffusionの学習設定まとめ｜gcem156</a></p>
+<p>  <a target="_blank" rel="noopener" href="https://dskjal.com/deeplearning/lora.html">LoRA の学習方法</a></p>
+</li>
+</ul>
+</li>
+<li><p>モデルの出力を待つ</p>
+</li>
+</ol>
+<h2 id="stable-diffusion-webUI"><a href="#stable-diffusion-webUI" class="headerlink" title="stable-diffusion-webUI"></a>stable-diffusion-webUI</h2><p>めんどくさいdiffusionをUI化してインタラクティブ操作可能になる。</p>
+<p>コマンドラインによる推論も可能ですが、UIの方がわかりやすくて色々な機能も完備する。</p>
+<ol>
+<li><p>ベースモデルをフォルダ<code>stable-diffusion-webui/models/Stable-diffusion</code>に移動</p>
+<p> Loraモデルをフォルダ<code>stable-diffusion-webui/models/Lora</code>に移動</p>
+</li>
+<li><p>run <code>./webui.sh</code> ：バーチャル環境の作成と依存ライブラリのダウンロード</p>
+</li>
+</ol>
+<p><img src="https://p.ipic.vip/qg6x37.png" alt="Untitled"></p>
+<p>さっき学習した画風で好きな画像を生成できた！</p>
+<h3 id="ControlNet"><a href="#ControlNet" class="headerlink" title="ControlNet"></a>ControlNet</h3><p>写真アプリではAIイラストレターの機能がよく見られる</p>
+<p>人の姿勢が保持するままに他の画風でイラスト化機能だ</p>
+<p><img src="https://p.ipic.vip/3w7m6m.jpeg" alt="Untitled"></p>
+<p>ControlNetは画像を参照元としてポーズを固定することができます</p>
+<p>ControlNetをWebUIに導入する：</p>
+<p><a target="_blank" rel="noopener" href="https://koneko3.com/how-to-use-controlnet/">https://koneko3.com/how-to-use-controlnet/</a></p>
+<p>異なるLoraモデルで同じポーズを生成した結果：</p>
+<p><img src="https://p.ipic.vip/jxryh5.png" alt="Untitled"></p>
+<h2 id="memo"><a href="#memo" class="headerlink" title="memo"></a>memo</h2><ul>
+<li>ControlNetには色々な種類があって、得意な生成分野も違います</li>
+<li>ControlNetを重視するかpromptを重視するかを調整するweightも結構重要だ</li>
+</ul>
+</article><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/DL/">DL</a></div><div class="post_share"><div class="social-share" data-image="https://p.ipic.vip/jxryh5.png" data-sites="twitter,wechat,weibo"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/05/09/diffusion-model/"><img class="next-cover" src="https://s3.bmp.ovh/imgs/2022/10/07/52b038cf12380ef8.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Diffusion model 总结</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/05/09/diffusion-model/" title="Diffusion model 总结"><img class="cover" src="https://s3.bmp.ovh/imgs/2022/10/07/52b038cf12380ef8.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-09</div><div class="title">Diffusion model 总结</div></div></a></div><div><a href="/2023/01/05/probability-output/" title="【花书】从概率统计到深度网络的概率预测"><img class="cover" src="https://s3.bmp.ovh/imgs/2022/10/07/75f5dd3e8d80f4b8.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-05</div><div class="title">【花书】从概率统计到深度网络的概率预测</div></div></a></div><div><a href="/2023/05/09/prompt-engineering/" title="提示工程 | Prompt Engineering"><img class="cover" src="https://images.unsplash.com/photo-1605845872108-b733db1f2663?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-09</div><div class="title">提示工程 | Prompt Engineering</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/butterfly/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Su</div><div class="author-info__description">You can also call me ChickenLeg</div></div><div class="card-info-data is-center"><div class="card-info-data-item"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a></div><div class="card-info-data-item"><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a></div><div class="card-info-data-item"><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div></div><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/llsf9" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:baihe2333@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B%E3%82%BD%E3%83%BC%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%BA%96%E5%82%99"><span class="toc-number">1.</span> <span class="toc-text">利用するソースコードの準備</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%83%87%E3%83%BC%E3%82%BF%E6%BA%96%E5%82%99"><span class="toc-number">2.</span> <span class="toc-text">データ準備</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%A4%96%E5%87%A6%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">例外処理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lora%E5%AD%A6%E7%BF%92"><span class="toc-number">3.</span> <span class="toc-text">Lora学習</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%A6%81"><span class="toc-number">3.1.</span> <span class="toc-text">概要</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E9%A0%86"><span class="toc-number">3.2.</span> <span class="toc-text">手順</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#stable-diffusion-webUI"><span class="toc-number">4.</span> <span class="toc-text">stable-diffusion-webUI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ControlNet"><span class="toc-number">4.1.</span> <span class="toc-text">ControlNet</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#memo"><span class="toc-number">5.</span> <span class="toc-text">memo</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/07/14/lora-fine/" title="Lora学習による画風生成"><img src="https://p.ipic.vip/jxryh5.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Lora学習による画風生成"/></a><div class="content"><a class="title" href="/2023/07/14/lora-fine/" title="Lora学習による画風生成">Lora学習による画風生成</a><time datetime="2023-07-14T09:47:28.000Z" title="发表于 2023-07-14 18:47:28">2023-07-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/09/diffusion-model/" title="Diffusion model 总结"><img src="https://s3.bmp.ovh/imgs/2022/10/07/52b038cf12380ef8.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Diffusion model 总结"/></a><div class="content"><a class="title" href="/2023/05/09/diffusion-model/" title="Diffusion model 总结">Diffusion model 总结</a><time datetime="2023-05-09T04:46:28.000Z" title="发表于 2023-05-09 13:46:28">2023-05-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/09/prompt-engineering/" title="提示工程 | Prompt Engineering"><img src="https://images.unsplash.com/photo-1605845872108-b733db1f2663?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=1170&amp;q=80" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="提示工程 | Prompt Engineering"/></a><div class="content"><a class="title" href="/2023/05/09/prompt-engineering/" title="提示工程 | Prompt Engineering">提示工程 | Prompt Engineering</a><time datetime="2023-05-09T04:41:28.000Z" title="发表于 2023-05-09 13:41:28">2023-05-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/01/05/probability-output/" title="【花书】从概率统计到深度网络的概率预测"><img src="https://s3.bmp.ovh/imgs/2022/10/07/75f5dd3e8d80f4b8.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【花书】从概率统计到深度网络的概率预测"/></a><div class="content"><a class="title" href="/2023/01/05/probability-output/" title="【花书】从概率统计到深度网络的概率预测">【花书】从概率统计到深度网络的概率预测</a><time datetime="2023-01-04T17:41:28.000Z" title="发表于 2023-01-05 02:41:28">2023-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/01/03/gradient-optimization/" title="【花书】从函数梯度到深度学习的优化算法"><img src="https://s3.bmp.ovh/imgs/2022/10/07/deca6204a9388179.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="【花书】从函数梯度到深度学习的优化算法"/></a><div class="content"><a class="title" href="/2023/01/03/gradient-optimization/" title="【花书】从函数梯度到深度学习的优化算法">【花书】从函数梯度到深度学习的优化算法</a><time datetime="2023-01-03T08:21:28.000Z" title="发表于 2023-01-03 17:21:28">2023-01-03</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://p.ipic.vip/jxryh5.png')"><div id="footer-wrap"><div class="copyright">&copy;2022 - 2023 By Su</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.2
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container:not\([display]\)').forEach(node => {
+            const target = node.parentNode
+            if (target.nodeName.toLowerCase() === 'li') {
+              target.parentNode.classList.add('has-jax')
+            } else {
+              target.classList.add('has-jax')
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typeset()
+}</script></div><div class="aplayer no-destroy" data-id="7424637733" data-server="netease" data-type="playlist" data-theme="#FFDBED" data-fixed="true" data-mini="true" data-order="random"> </div><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  typeof preloader === 'object' && preloader.initLoading()
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+
+  typeof preloader === 'object' && preloader.endLoading()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
